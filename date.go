@@ -107,3 +107,7 @@ func (d Date) EndOfMonth() Date {
 func (d Date) String() string {
   return d.time.Format("2006-01-02")
 }
+
+func (d Date) Time() time.Time {
+  return d.time
+}

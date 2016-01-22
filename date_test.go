@@ -77,3 +77,13 @@ func TestEndOfMonth(t *testing.T) {
     t.Errorf(message, exp, sbj)
   }
 }
+
+func TestTime(t *testing.T) {
+  sbj := New("1982-05-17")
+
+  exp := time.Date(1982, 5, 17, 0, 0, 0, 0, time.UTC)
+
+  if sbj.Time() != exp {
+    t.Errorf(message, exp, sbj)
+  }
+}
