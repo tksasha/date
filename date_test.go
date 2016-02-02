@@ -1,9 +1,11 @@
-package date
+package date_test
 
 import (
   "time"
   "testing"
   "fmt"
+
+  . "github.com/tksasha/go-date"
 )
 
 const message = "\033[32m`%v`\033[0m was expected, but it is \033[31m`%v`\033[0m"
