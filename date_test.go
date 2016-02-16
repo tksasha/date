@@ -5,7 +5,7 @@ import (
   "testing"
   "fmt"
 
-  . "github.com/tksasha/go-date"
+  . "github.com/tksasha/date"
 )
 
 const message = "\033[32m`%v`\033[0m was expected, but it is \033[31m`%v`\033[0m"
