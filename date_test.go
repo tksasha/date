@@ -1,91 +1,89 @@
-package date_test
+package date
 
 import (
-  "time"
-  "testing"
-  "fmt"
-
-  . "github.com/tksasha/date"
+	"fmt"
+	"testing"
+	"time"
 )
 
 const message = "\033[32m`%v`\033[0m was expected, but it is \033[31m`%v`\033[0m"
 
 func TestNewWithoutAnyParams(t *testing.T) {
-  sbj := New()
+	sbj := New()
 
-  exp := time.Now().Format("2006-01-02")
+	exp := time.Now().Format("2006-01-02")
 
-  if sbj.String() != exp {
-    t.Errorf(message, exp, sbj)
-  }
+	if sbj.String() != exp {
+		t.Errorf(message, exp, sbj)
+	}
 }
 
 func TestNewWithOnlyYear(t *testing.T) {
-  sbj := New("1982")
+	sbj := New("1982")
 
-  exp := fmt.Sprintf("1982-%02d-%02d", time.Now().Month(), time.Now().Day())
+	exp := fmt.Sprintf("1982-%02d-%02d", time.Now().Month(), time.Now().Day())
 
-  if sbj.String() != exp {
-    t.Errorf(message, exp, sbj)
-  }
+	if sbj.String() != exp {
+		t.Errorf(message, exp, sbj)
+	}
 }
 
 func TestNewWithYearAndMonth(t *testing.T) {
-  sbj := New("1982", "05")
+	sbj := New("1982", "05")
 
-  exp := fmt.Sprintf("1982-05-%02d", time.Now().Day())
+	exp := fmt.Sprintf("1982-05-%02d", time.Now().Day())
 
-  if sbj.String() != exp {
-    t.Errorf(message, exp, sbj)
-  }
+	if sbj.String() != exp {
+		t.Errorf(message, exp, sbj)
+	}
 }
 
 func TestNewWithYearMonthAndDay(t *testing.T) {
-  sbj := New("1982", "05", "17")
+	sbj := New("1982", "05", "17")
 
-  exp := "1982-05-17"
+	exp := "1982-05-17"
 
-  if sbj.String() != exp {
-    t.Errorf(message, exp, sbj)
-  }
+	if sbj.String() != exp {
+		t.Errorf(message, exp, sbj)
+	}
 }
 
 func TestNewWithString(t *testing.T) {
-  sbj := New("1982-05-17")
+	sbj := New("1982-05-17")
 
-  exp := "1982-05-17"
+	exp := "1982-05-17"
 
-  if sbj.String() != exp {
-    t.Errorf(message, exp, sbj)
-  }
+	if sbj.String() != exp {
+		t.Errorf(message, exp, sbj)
+	}
 }
 
 func TestBeginningOfMonth(t *testing.T) {
-  sbj := New("1982-05-17")
+	sbj := New("1982-05-17")
 
-  exp := "1982-05-01"
+	exp := "1982-05-01"
 
-  if sbj.BeginningOfMonth().String() != exp {
-    t.Errorf(message, exp, sbj)
-  }
+	if sbj.BeginningOfMonth().String() != exp {
+		t.Errorf(message, exp, sbj)
+	}
 }
 
 func TestEndOfMonth(t *testing.T) {
-  sbj := New("1982-05-17")
+	sbj := New("1982-05-17")
 
-  exp := "1982-05-31"
+	exp := "1982-05-31"
 
-  if sbj.EndOfMonth().String() != exp {
-    t.Errorf(message, exp, sbj)
-  }
+	if sbj.EndOfMonth().String() != exp {
+		t.Errorf(message, exp, sbj)
+	}
 }
 
 func TestTime(t *testing.T) {
-  sbj := New("1982-05-17")
+	sbj := New("1982-05-17")
 
-  exp := time.Date(1982, 5, 17, 0, 0, 0, 0, time.UTC)
+	exp := time.Date(1982, 5, 17, 0, 0, 0, 0, time.UTC)
 
-  if sbj.Time() != exp {
-    t.Errorf(message, exp, sbj)
-  }
+	if sbj.Time() != exp {
+		t.Errorf(message, exp, sbj)
+	}
 }
