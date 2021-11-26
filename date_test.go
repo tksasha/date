@@ -1,89 +1,100 @@
 package date
 
 import (
-	"fmt"
 	"testing"
 	"time"
 )
 
-const message = "\033[32m`%v`\033[0m was expected, but it is \033[31m`%v`\033[0m"
+const message = "\033[31m`%v` was expected, but it is `%v`\033[0m"
 
-func TestNewWithoutAnyParams(t *testing.T) {
-	sbj := New()
+func TestYear(t *testing.T) {
+	subject := NewDate(2021, 12, 31).Year()
 
-	exp := time.Now().Format("2006-01-02")
+	expected := 2021
 
-	if sbj.String() != exp {
-		t.Errorf(message, exp, sbj)
+	if subject != expected {
+		t.Errorf(message, subject, expected)
 	}
 }
 
-func TestNewWithOnlyYear(t *testing.T) {
-	sbj := New("1982")
+func TestMonth(t *testing.T) {
+	subject := NewDate(2021, 12, 31).Month()
 
-	exp := fmt.Sprintf("1982-%02d-%02d", time.Now().Month(), time.Now().Day())
+	expected := 12
 
-	if sbj.String() != exp {
-		t.Errorf(message, exp, sbj)
+	if subject != expected {
+		t.Errorf(message, subject, expected)
 	}
 }
 
-func TestNewWithYearAndMonth(t *testing.T) {
-	sbj := New("1982", "05")
+func TestDay(t *testing.T) {
+	subject := NewDate(2021, 12, 31).Day()
 
-	exp := fmt.Sprintf("1982-05-%02d", time.Now().Day())
+	expected := 31
 
-	if sbj.String() != exp {
-		t.Errorf(message, exp, sbj)
+	if subject != expected {
+		t.Errorf(message, subject, expected)
 	}
 }
 
-func TestNewWithYearMonthAndDay(t *testing.T) {
-	sbj := New("1982", "05", "17")
+func TestIsEqual(t *testing.T) {
+	var subject, expected Date
 
-	exp := "1982-05-17"
+	subject = NewDate(2021, 12, 31)
 
-	if sbj.String() != exp {
-		t.Errorf(message, exp, sbj)
+	expected = NewDate(2021, 12, 31)
+
+	if subject.IsEqual(expected) == false {
+		t.Errorf(message, subject, expected)
+	}
+
+	subject = NewDate(2021, 12, 31)
+
+	expected = NewDate(2022, 12, 31)
+
+	if subject.IsEqual(expected) == true {
+		t.Errorf(message, subject, expected)
 	}
 }
 
-func TestNewWithString(t *testing.T) {
-	sbj := New("1982-05-17")
+func TestToday(t *testing.T) {
+	year, month, day := time.Now().Date()
 
-	exp := "1982-05-17"
+	subject := Today()
 
-	if sbj.String() != exp {
-		t.Errorf(message, exp, sbj)
+	expected := NewDate(year, int(month), day)
+
+	if subject.IsEqual(expected) == false {
+		t.Errorf(message, subject, expected)
 	}
 }
 
-func TestBeginningOfMonth(t *testing.T) {
-	sbj := New("1982-05-17")
+func TestString(t *testing.T) {
+	subject := NewDate(2021, 12, 31).String()
 
-	exp := "1982-05-01"
+	expected := "2021-12-31"
 
-	if sbj.BeginningOfMonth().String() != exp {
-		t.Errorf(message, exp, sbj)
+	if subject != expected {
+		t.Errorf(message, subject, expected)
 	}
 }
 
-func TestEndOfMonth(t *testing.T) {
-	sbj := New("1982-05-17")
+func TestMarshalJSON(t *testing.T) {
+	subject := NewDate(2021, 12, 31).MarshalJSON()
 
-	exp := "1982-05-31"
+	expected := "2021-12-31"
 
-	if sbj.EndOfMonth().String() != exp {
-		t.Errorf(message, exp, sbj)
+	if subject != expected {
+		t.Errorf(message, subject, expected)
 	}
 }
 
-func TestTime(t *testing.T) {
-	sbj := New("1982-05-17")
+func TestParse(t *testing.T) {
+	subject, _ := Parse("2021-12-31")
 
-	exp := time.Date(1982, 5, 17, 0, 0, 0, 0, time.UTC)
+	expected := NewDate(2021, 12, 31)
 
-	if sbj.Time() != exp {
-		t.Errorf(message, exp, sbj)
+	if subject != expected {
+		t.Errorf(message, subject, expected)
 	}
 }

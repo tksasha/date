@@ -1,6 +1,8 @@
 package date
 
 import (
+	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 	"time"
@@ -10,104 +12,82 @@ type Date struct {
 	time time.Time
 }
 
-func New(params ...string) Date {
-	var year, day int
-
-	var month time.Month
-
-	now := time.Now()
-
-	mask := regexp.MustCompile(`\A(\d{4})-(\d{2})-(\d{2})\z`)
-
-	//
-	// Parse "1982-05-17" or Year
-	//
-	if len(params) == 1 && mask.MatchString(params[0]) {
-		year, month, day = parse(mask.FindStringSubmatch(params[0]))
-	} else if len(params) > 0 {
-		year, _ = strconv.Atoi(params[0])
-	}
-
-	//
-	// parse Month
-	//
-	if len(params) > 1 {
-		m, _ := strconv.Atoi(params[1])
-
-		month = time.Month(m)
-	}
-
-	//
-	// parse Day
-	//
-	if len(params) > 2 {
-		day, _ = strconv.Atoi(params[2])
-	}
-
-	//
-	// Assign Default Values
-	//
-	if year == 0 {
-		year = now.Year()
-	}
-
-	if month == 0 {
-		month = now.Month()
-	}
-
-	if day == 0 {
-		day = now.Day()
-	}
-
-	return Date{
-		time: time.Date(year, month, day, 0, 0, 0, 0, time.UTC),
-	}
+func NewDate(year, month, day int) Date {
+	return Date{time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)}
 }
 
-func parse(input []string) (int, time.Month, int) {
-	var year, day int
-
-	var month time.Month
-
-	if len(input[1]) != 0 {
-		year, _ = strconv.Atoi(input[1])
-	}
-
-	if len(input[2]) != 0 {
-		m, _ := strconv.Atoi(input[2])
-
-		month = time.Month(m)
-	}
-
-	if len(input[3]) != 0 {
-		day, _ = strconv.Atoi(input[3])
-	}
-
-	return year, month, day
+func (date Date) Year() int {
+	return date.time.Year()
 }
 
-func (d Date) BeginningOfMonth() Date {
-	year, month, _ := d.time.Date()
+func (date Date) Month() int {
+	return int(date.time.Month())
+}
 
-	return Date{
-		time: time.Date(year, month, 1, 0, 0, 0, 0, d.time.Location()),
+func (date Date) Day() int {
+	return date.time.Day()
+}
+
+func (this Date) IsEqual(another Date) bool {
+	if this.Year() != another.Year() {
+		return false
 	}
-}
 
-func (d Date) EndOfMonth() Date {
-	year, month, _ := d.time.Date()
-
-	month = time.Month(month + 1)
-
-	return Date{
-		time: time.Date(year, month, 1, 0, 0, 0, 0, d.time.Location()).Add(-24 * time.Hour),
+	if this.Month() != another.Month() {
+		return false
 	}
+
+	if this.Day() != another.Day() {
+		return false
+	}
+
+	return true
 }
 
-func (d Date) String() string {
-	return d.time.Format("2006-01-02")
+func Today() Date {
+	year, month, day := time.Now().Date()
+
+	return NewDate(year, int(month), day)
 }
 
-func (d Date) Time() time.Time {
-	return d.time
+func (this Date) String() string {
+	return fmt.Sprintf("%04d-%02d-%02d", this.Year(), this.Month(), this.Day())
+}
+
+func (this Date) MarshalJSON() string {
+	return this.String()
+}
+
+func Parse(input string) (Date, error) {
+	var year, month, day int
+
+	var err error
+
+	parsed := regexp.
+		MustCompile(`\A(\d{4})-(\d{2})-(\d{2})\z`).
+		FindStringSubmatch(input)
+
+	if len(parsed) < 4 {
+		return Date{}, errors.New("date is invalid")
+	}
+
+	year, err = strconv.Atoi(parsed[1])
+
+	if err != nil {
+		return Date{}, err
+	}
+
+	month, err = strconv.Atoi(parsed[2])
+
+	if err != nil {
+		return Date{}, err
+	}
+
+	day, err = strconv.Atoi(parsed[3])
+
+	if err != nil {
+		return Date{}, err
+	}
+
+	return NewDate(year, month, day), nil
 }
