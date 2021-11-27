@@ -95,3 +95,7 @@ func Parse(input string) (Date, error) {
 
 	return NewDate(year, month, day), nil
 }
+
+func (date Date) Empty() bool {
+	return date.Equal(Date{})
+}

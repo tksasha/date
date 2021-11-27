@@ -118,3 +118,29 @@ func TestParse(t *testing.T) {
 		t.Errorf(message, subject, expected)
 	}
 }
+
+func TestEmpty(t *testing.T) {
+	var subject, expected bool
+
+	var date Date
+
+	date, _ = Parse("")
+
+	subject = date.Empty()
+
+	expected = true
+
+	if subject != expected {
+		t.Errorf(message, subject, expected)
+	}
+
+	date, _ = Parse("2021-12-31")
+
+	subject = date.Empty()
+
+	expected = false
+
+	if subject != expected {
+		t.Errorf(message, subject, expected)
+	}
+}
