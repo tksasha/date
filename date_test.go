@@ -7,6 +7,26 @@ import (
 
 const message = "\033[31m`%v` was expected, but it is `%v`\033[0m"
 
+func TestNewDate(t *testing.T) {
+	subject := NewDate(2021, 12, 31)
+
+	expected := Date{time.Date(2021, 12, 31, 0, 0, 0, 0, time.UTC)}
+
+	if subject.Equal(expected) == false {
+		t.Errorf(message, subject, expected)
+	}
+}
+
+func TestNew(t *testing.T) {
+	subject := New(2021, 12, 31)
+
+	expected := Date{time.Date(2021, 12, 31, 0, 0, 0, 0, time.UTC)}
+
+	if subject.Equal(expected) == false {
+		t.Errorf(message, subject, expected)
+	}
+}
+
 func TestYear(t *testing.T) {
 	subject := NewDate(2021, 12, 31).Year()
 
@@ -37,14 +57,14 @@ func TestDay(t *testing.T) {
 	}
 }
 
-func TestIsEqual(t *testing.T) {
+func TestEqual(t *testing.T) {
 	var subject, expected Date
 
 	subject = NewDate(2021, 12, 31)
 
 	expected = NewDate(2021, 12, 31)
 
-	if subject.IsEqual(expected) == false {
+	if subject.Equal(expected) == false {
 		t.Errorf(message, subject, expected)
 	}
 
@@ -52,7 +72,7 @@ func TestIsEqual(t *testing.T) {
 
 	expected = NewDate(2022, 12, 31)
 
-	if subject.IsEqual(expected) == true {
+	if subject.Equal(expected) == true {
 		t.Errorf(message, subject, expected)
 	}
 }
@@ -64,7 +84,7 @@ func TestToday(t *testing.T) {
 
 	expected := NewDate(year, int(month), day)
 
-	if subject.IsEqual(expected) == false {
+	if subject.Equal(expected) == false {
 		t.Errorf(message, subject, expected)
 	}
 }

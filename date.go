@@ -16,6 +16,10 @@ func NewDate(year, month, day int) Date {
 	return Date{time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)}
 }
 
+func New(year, month, day int) Date {
+	return NewDate(year, month, day)
+}
+
 func (date Date) Year() int {
 	return date.time.Year()
 }
@@ -28,7 +32,7 @@ func (date Date) Day() int {
 	return date.time.Day()
 }
 
-func (this Date) IsEqual(another Date) bool {
+func (this Date) Equal(another Date) bool {
 	if this.Year() != another.Year() {
 		return false
 	}
