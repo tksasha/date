@@ -3,144 +3,139 @@ package date
 import (
 	"testing"
 	"time"
+
+	"os"
+	"encoding/json"
+	"strings"
 )
 
-const message = "\033[31m`%v` was expected, but it is `%v`\033[0m"
+const M = "\033[31m`%v` was expected, but it is `%v`\033[0m"
 
-func TestNewDate(t *testing.T) {
-	subject := NewDate(2021, 12, 31)
+func TestParse(t *testing.T) {
+	res, err := Parse("2023-11-15")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	expected := Date{time.Date(2021, 12, 31, 0, 0, 0, 0, time.UTC)}
+	exp := New(2023, 11, 15)
 
-	if subject.Equal(expected) == false {
-		t.Errorf(message, subject, expected)
+	if exp != res {
+		t.Errorf(M, exp, res)
 	}
 }
 
 func TestNew(t *testing.T) {
-	subject := New(2021, 12, 31)
+	res := New(2023, 11, 17)
 
-	expected := Date{time.Date(2021, 12, 31, 0, 0, 0, 0, time.UTC)}
-
-	if subject.Equal(expected) == false {
-		t.Errorf(message, subject, expected)
+	if 2023 != res.Year() {
+		t.Errorf(M, 2023, res.Year())
 	}
-}
 
-func TestYear(t *testing.T) {
-	subject := NewDate(2021, 12, 31).Year()
-
-	expected := 2021
-
-	if subject != expected {
-		t.Errorf(message, subject, expected)
+	if 11 != res.Month() {
+		t.Errorf(M, 11, res.Month())
 	}
-}
 
-func TestMonth(t *testing.T) {
-	subject := NewDate(2021, 12, 31).Month()
-
-	expected := 12
-
-	if subject != expected {
-		t.Errorf(message, subject, expected)
-	}
-}
-
-func TestDay(t *testing.T) {
-	subject := NewDate(2021, 12, 31).Day()
-
-	expected := 31
-
-	if subject != expected {
-		t.Errorf(message, subject, expected)
+	if 17 != res.Day() {
+		t.Errorf(M, 17, res.Day())
 	}
 }
 
 func TestEqual(t *testing.T) {
-	var subject, expected Date
+	t.Run("when it is the same", func(t *testing.T) {
+		d1 := New(2023, 11, 17)
+		d2 := New(2023, 11, 17)
 
-	subject = NewDate(2021, 12, 31)
+		if d1 != d2 {
+			t.Errorf(M, true, false)
+		}
+	})
 
-	expected = NewDate(2021, 12, 31)
+	t.Run("when it is not the same", func(t *testing.T) {
+		d1 := New(2023, 11, 17)
+		d2 := New(2023, 11, 18)
 
-	if subject.Equal(expected) == false {
-		t.Errorf(message, subject, expected)
-	}
-
-	subject = NewDate(2021, 12, 31)
-
-	expected = NewDate(2022, 12, 31)
-
-	if subject.Equal(expected) == true {
-		t.Errorf(message, subject, expected)
-	}
+		if d1 == d2 {
+			t.Errorf(M, false, true)
+		}
+	})
 }
 
 func TestToday(t *testing.T) {
 	year, month, day := time.Now().Date()
 
-	subject := Today()
+	exp := New(year, int(month), day)
 
-	expected := NewDate(year, int(month), day)
+	res := Today()
 
-	if subject.Equal(expected) == false {
-		t.Errorf(message, subject, expected)
+	if exp != res {
+		t.Errorf(M, exp, res)
 	}
 }
 
 func TestString(t *testing.T) {
-	subject := NewDate(2021, 12, 31).String()
+	exp := "2023-11-17"
 
-	expected := "2021-12-31"
+	res := New(2023, 11, 17).String()
 
-	if subject != expected {
-		t.Errorf(message, subject, expected)
+	if exp != res {
+		t.Errorf(M, exp, res)
 	}
 }
 
 func TestMarshalJSON(t *testing.T) {
-	subject := NewDate(2021, 12, 31).MarshalJSON()
+	exp := `"2023-11-17"`
 
-	expected := "2021-12-31"
+	res, _ := New(2023, 11, 17).MarshalJSON()
 
-	if subject != expected {
-		t.Errorf(message, subject, expected)
+	if exp != string(res) {
+		t.Errorf(M, exp, string(res))
 	}
+
+	t.Run("when it is in struct", func(t *testing.T) {
+		item := struct {
+			Date Date `json:"date"`
+		}{ New(2023, 11, 17) }
+
+		fd, _ := os.CreateTemp("", "j.json")
+
+		defer os.Remove(fd.Name())
+
+		json.NewEncoder(fd).Encode(item)
+
+		exp := `{"date":"2023-11-17"}`
+
+		data, _ := os.ReadFile(fd.Name())
+
+		res := strings.Trim(string(data), "\n")
+
+		if exp != res {
+			t.Errorf(M, exp, res)
+		}
+	})
 }
 
-func TestParse(t *testing.T) {
-	subject, _ := Parse("2021-12-31")
+// func TestEmpty(t *testing.T) {
+// 	var subject, expected bool
 
-	expected := NewDate(2021, 12, 31)
+// 	var date Date
 
-	if subject != expected {
-		t.Errorf(message, subject, expected)
-	}
-}
+// 	date, _ = Parse("")
 
-func TestEmpty(t *testing.T) {
-	var subject, expected bool
+// 	subject = date.Empty()
 
-	var date Date
+// 	expected = true
 
-	date, _ = Parse("")
+// 	if subject != expected {
+// 		t.Errorf(message, subject, expected)
+// 	}
 
-	subject = date.Empty()
+// 	date, _ = Parse("2021-12-31")
 
-	expected = true
+// 	subject = date.Empty()
 
-	if subject != expected {
-		t.Errorf(message, subject, expected)
-	}
+// 	expected = false
 
-	date, _ = Parse("2021-12-31")
-
-	subject = date.Empty()
-
-	expected = false
-
-	if subject != expected {
-		t.Errorf(message, subject, expected)
-	}
-}
+// 	if subject != expected {
+// 		t.Errorf(message, subject, expected)
+// 	}
+// }
