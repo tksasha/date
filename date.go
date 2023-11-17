@@ -3,6 +3,7 @@ package date
 import (
 	"time"
 	"fmt"
+	"strings"
 )
 
 type Date struct{
@@ -26,6 +27,10 @@ func Today() Date {
 	return New(year, int(month), day)
 }
 
+func (date Date) IsEmpty() bool {
+	return date == New(1, 1, 1)
+}
+
 func (date Date) String() string {
 	return date.Format(time.DateOnly)
 }
@@ -34,8 +39,12 @@ func (date Date) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf("%q", date.String())), nil
 }
 
-////////
+func (date *Date) UnmarshalJSON(data []byte) (err error) {
+	ss := strings.Trim(string(data), `"`)
 
-// func (date Date) Empty() bool {
-// 	return date.Equal(Date{})
-// }
+	tt, err := time.Parse(time.DateOnly, ss)
+
+	*date = Date{tt}
+
+	return
+}

@@ -72,6 +72,18 @@ func TestToday(t *testing.T) {
 	}
 }
 
+func TestIsEmpty(t *testing.T) {
+	date, _ := Parse("")
+
+	exp := true
+
+	res := date.IsEmpty()
+
+	if exp != res {
+		t.Errorf(M, exp, res)
+	}
+}
+
 func TestString(t *testing.T) {
 	exp := "2023-11-17"
 
@@ -83,15 +95,17 @@ func TestString(t *testing.T) {
 }
 
 func TestMarshalJSON(t *testing.T) {
-	exp := `"2023-11-17"`
+	t.Run("when it is an object", func(t *testing.T) {
+		exp := `"2023-11-17"`
 
-	res, _ := New(2023, 11, 17).MarshalJSON()
+		res, _ := New(2023, 11, 17).MarshalJSON()
 
-	if exp != string(res) {
-		t.Errorf(M, exp, string(res))
-	}
+		if exp != string(res) {
+			t.Errorf(M, exp, string(res))
+		}
+	})
 
-	t.Run("when it is in struct", func(t *testing.T) {
+	t.Run("when it is in a struct", func(t *testing.T) {
 		item := struct {
 			Date Date `json:"date"`
 		}{ New(2023, 11, 17) }
@@ -114,28 +128,42 @@ func TestMarshalJSON(t *testing.T) {
 	})
 }
 
-// func TestEmpty(t *testing.T) {
-// 	var subject, expected bool
+func TestUnmarshalJSON(t *testing.T) {
+	t.Run("when it is an object", func(t *testing.T) {
+		exp := New(2023, 11, 17)
 
-// 	var date Date
+		res := &Date{}
 
-// 	date, _ = Parse("")
+		data := []byte(`"2023-11-17"`)
 
-// 	subject = date.Empty()
+		_ = res.UnmarshalJSON(data)
 
-// 	expected = true
+		if exp != *res {
+			t.Errorf(M, exp, res)
+		}
+	})
 
-// 	if subject != expected {
-// 		t.Errorf(message, subject, expected)
-// 	}
+	t.Run("when it is in a struct", func(t *testing.T) {
+		exp := struct {
+			Date Date
+		}{ New(2023, 11, 17) }
 
-// 	date, _ = Parse("2021-12-31")
+		res := struct {
+			Date Date
+		}{}
 
-// 	subject = date.Empty()
+		fd, _ := os.CreateTemp("", "j.json")
 
-// 	expected = false
+		defer os.Remove(fd.Name())
 
-// 	if subject != expected {
-// 		t.Errorf(message, subject, expected)
-// 	}
-// }
+		fd.Write([]byte(`{"date":"2023-11-17"}`))
+
+		fd.Seek(0, 0)
+
+		json.NewDecoder(fd).Decode(&res)
+
+		if exp != res {
+			t.Errorf(M, exp, res)
+		}
+	})
+}
