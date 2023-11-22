@@ -1,18 +1,20 @@
 package date
 
 import (
-	"time"
 	"fmt"
 	"strings"
+	"time"
 )
 
-type Date struct{
+type Date struct {
 	time.Time
 }
 
 func Parse(input string) (Date, error) {
 	t, err := time.Parse(time.DateOnly, input)
-	if err != nil { return Date{}, err }
+	if err != nil {
+		return Date{}, err
+	}
 
 	return Date{t}, nil
 }

@@ -1,43 +1,33 @@
 package date
 
 import (
+	"encoding/json"
+	"os"
+	"strings"
 	"testing"
 	"time"
 
-	"os"
-	"encoding/json"
-	"strings"
+	"gotest.tools/v3/assert"
 )
-
-const M = "\033[31m`%v` was expected, but it is `%v`\033[0m"
 
 func TestParse(t *testing.T) {
 	res, err := Parse("2023-11-15")
-	if err != nil {
-		t.Fatal(err)
-	}
+
+	assert.NilError(t, err)
 
 	exp := New(2023, 11, 15)
 
-	if exp != res {
-		t.Errorf(M, exp, res)
-	}
+	assert.Equal(t, exp, res)
 }
 
 func TestNew(t *testing.T) {
 	res := New(2023, 11, 17)
 
-	if 2023 != res.Year() {
-		t.Errorf(M, 2023, res.Year())
-	}
+	assert.Equal(t, res.Year(), 2023)
 
-	if 11 != res.Month() {
-		t.Errorf(M, 11, res.Month())
-	}
+	assert.Equal(t, int(res.Month()), 11)
 
-	if 17 != res.Day() {
-		t.Errorf(M, 17, res.Day())
-	}
+	assert.Equal(t, res.Day(), 17)
 }
 
 func TestEqual(t *testing.T) {
@@ -45,18 +35,14 @@ func TestEqual(t *testing.T) {
 		d1 := New(2023, 11, 17)
 		d2 := New(2023, 11, 17)
 
-		if d1 != d2 {
-			t.Errorf(M, true, false)
-		}
+		assert.Assert(t, d1 == d2)
 	})
 
 	t.Run("when it is not the same", func(t *testing.T) {
 		d1 := New(2023, 11, 17)
 		d2 := New(2023, 11, 18)
 
-		if d1 == d2 {
-			t.Errorf(M, false, true)
-		}
+		assert.Assert(t, d1 != d2)
 	})
 }
 
@@ -67,48 +53,34 @@ func TestToday(t *testing.T) {
 
 	res := Today()
 
-	if exp != res {
-		t.Errorf(M, exp, res)
-	}
+	assert.Equal(t, res, exp)
 }
 
 func TestIsEmpty(t *testing.T) {
-	date, _ := Parse("")
+	date, err := Parse("")
 
-	exp := true
+	assert.Assert(t, err != nil)
 
-	res := date.IsEmpty()
-
-	if exp != res {
-		t.Errorf(M, exp, res)
-	}
+	assert.Assert(t, date.IsEmpty())
 }
 
 func TestString(t *testing.T) {
-	exp := "2023-11-17"
-
 	res := New(2023, 11, 17).String()
 
-	if exp != res {
-		t.Errorf(M, exp, res)
-	}
+	assert.Equal(t, res, "2023-11-17")
 }
 
 func TestMarshalJSON(t *testing.T) {
 	t.Run("when it is an object", func(t *testing.T) {
-		exp := `"2023-11-17"`
-
 		res, _ := New(2023, 11, 17).MarshalJSON()
 
-		if exp != string(res) {
-			t.Errorf(M, exp, string(res))
-		}
+		assert.Equal(t, string(res), `"2023-11-17"`)
 	})
 
 	t.Run("when it is in a struct", func(t *testing.T) {
 		item := struct {
 			Date Date `json:"date"`
-		}{ New(2023, 11, 17) }
+		}{New(2023, 11, 17)}
 
 		fd, _ := os.CreateTemp("", "j.json")
 
@@ -122,31 +94,25 @@ func TestMarshalJSON(t *testing.T) {
 
 		res := strings.Trim(string(data), "\n")
 
-		if exp != res {
-			t.Errorf(M, exp, res)
-		}
+		assert.Equal(t, res, exp)
 	})
 }
 
 func TestUnmarshalJSON(t *testing.T) {
 	t.Run("when it is an object", func(t *testing.T) {
-		exp := New(2023, 11, 17)
-
 		res := &Date{}
 
 		data := []byte(`"2023-11-17"`)
 
 		_ = res.UnmarshalJSON(data)
 
-		if exp != *res {
-			t.Errorf(M, exp, res)
-		}
+		assert.Equal(t, *res, New(2023, 11, 17))
 	})
 
 	t.Run("when it is in a struct", func(t *testing.T) {
 		exp := struct {
 			Date Date
-		}{ New(2023, 11, 17) }
+		}{New(2023, 11, 17)}
 
 		res := struct {
 			Date Date
@@ -162,8 +128,6 @@ func TestUnmarshalJSON(t *testing.T) {
 
 		json.NewDecoder(fd).Decode(&res)
 
-		if exp != res {
-			t.Errorf(M, exp, res)
-		}
+		assert.Equal(t, res, exp)
 	})
 }
