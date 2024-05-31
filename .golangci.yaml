@@ -1,0 +1,36 @@
+run:
+  skip-dirs:
+linters-settings:
+  funlen:
+    ignore-comments: true
+  revive:
+    rules:
+      - name: exported
+        disabled: true
+  stylecheck:
+    checks: ["all", "-ST1000"]
+linters:
+  enable-all: true
+  disable:
+    ### deprecated, archived or obsolette by authors
+    - execinquery
+    - gci
+    - gomnd # use mnd instead
+    - paralleltest
+    ### disabled by me
+    - depguard
+    - err113
+    - exhaustruct
+    - godot
+    - godox
+    - gofumpt
+    - ireturn
+    - noctx # TODO: ???
+    - perfsprint # TODO: !!!
+    - varnamelen
+    - wrapcheck
+issues:
+  exclude-use-default: false
+  exclude:
+    - composites
+  exclude-files:

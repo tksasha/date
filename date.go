@@ -41,12 +41,12 @@ func (date Date) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf("%q", date.String())), nil
 }
 
-func (date *Date) UnmarshalJSON(data []byte) (err error) {
+func (date *Date) UnmarshalJSON(data []byte) error {
 	ss := strings.Trim(string(data), `"`)
 
 	tt, err := time.Parse(time.DateOnly, ss)
 
 	*date = Date{tt}
 
-	return
+	return err
 }

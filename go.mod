@@ -1,6 +1,6 @@
 module github.com/tksasha/date
 
-go 1.17
+go 1.22
 
 require gotest.tools/v3 v3.5.1
 
