@@ -14,23 +14,14 @@ linters:
   disable:
     ### deprecated, archived or obsolette by authors
     - execinquery
-    - gci
+    - exportloopref
     - gomnd # use mnd instead
     - paralleltest
     ### disabled by me
     - depguard
-    - err113
     - exhaustruct
-    - godot
-    - godox
-    - gofumpt
-    - ireturn
-    - noctx # TODO: ???
-    - perfsprint # TODO: !!!
-    - varnamelen
     - wrapcheck
 issues:
   exclude-use-default: false
   exclude:
-    - composites
   exclude-files:

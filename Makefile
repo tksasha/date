@@ -1,35 +1,31 @@
-.PHONY: all
-all: vet fix fmt lint test
+GO=/opt/homebrew/bin/go
+LINTER=github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+FORMATTER=mvdan.cc/gofumpt@latest
+
+.PHONY: default
+default: vet fix fmt lint test
 
 .PHONY: vet
 vet:
 	@echo "go vet"
-	@go vet ./...
+	@$(GO) vet ./...
 
 .PHONY: fix
 fix:
 	@echo "go fix"
-	@go fix ./...
+	@$(GO) fix ./...
 
 .PHONY: fmt
 fmt:
 	@echo "go fmt"
-	@gofumpt -l -w .
+	@$(GO) run $(FORMATTER) -l -w .
 
 .PHONY: lint
 lint:
 	@echo "go lint"
-	@golangci-lint run
+	@$(GO) run $(LINTER) run
 
 .PHONY: test
 test:
 	@echo "go test"
-	@go test ./...
-
-.PHONY: prepare
-prepare:
-	go get github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-	go get mvdan.cc/gofumpt@latest
-	go install mvdan.cc/gofumpt@latest
-	go mod tidy
+	@$(GO) test ./...
